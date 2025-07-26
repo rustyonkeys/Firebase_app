@@ -15,17 +15,29 @@ class _HomePageState extends State<HomePage> {
   final FirestoneServices firestoneServices = FirestoneServices();
 
   //how to access how the user typed
-  final TextEditingController textcontroller = TextEditingController();
+  final TextEditingController textcontroller = TextEditingController();  //texteditor is used to extract what the user has typed
 
   //open the dialogue box
-  void opendialoguebox({String? docID}){   //if docID can be null
+  void opendialoguebox({String? docID, String? existingnote}){   //if docID can be null
+    // Prefill the text controller
+    if (existingnote != null){
+      textcontroller.text = existingnote;
+    }
+    else{
+      textcontroller.clear();
+    }
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
           //text field for user input
           content: TextField(
-            controller: textcontroller,
-          ),
+              controller: textcontroller,
+              decoration: InputDecoration(
+                hintText: "Enter the task",
+                border: OutlineInputBorder(),
+              ),
+            ),
+
           //button to save
           actions: [
             ElevatedButton(
@@ -88,9 +100,23 @@ class _HomePageState extends State<HomePage> {
                   //display as a list title
                   return ListTile(
                     title: Text(noteText),
-                  trailing: IconButton(
-                      onPressed: () => opendialoguebox(docID: docID) ,
-                      icon: Icon(Icons.add)),);
+                  trailing:Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      //update button
+                      IconButton(
+                          onPressed: () => opendialoguebox(docID: docID, existingnote: noteText) ,
+                          icon: Icon(Icons.edit)),
+                      //delete button
+                      IconButton(
+                          onPressed: () => firestoneServices.deleteNote(docID) ,
+                          icon: Icon(Icons.delete),
+                      color: Colors.red,),
+                    ],
+                  )
+
+
+                    );
                 },);
           }
           //if there is no data return nothing
@@ -101,3 +127,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+//StreamBuilder is a Flutter widget that listens to a stream of data and rebuilds the UI whenever the stream sends a new event.
+//
+// Think of it like this:
+// “Whenever the data changes, automatically rebuild this part of the screen.”

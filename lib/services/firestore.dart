@@ -23,9 +23,12 @@ Future<void> addNote(String note){
   //Update: update notes given a doc id
   Future<void> updateNote(String docId, String newNote) { //will take docID to see which id to change and also update the new note
   return notes.doc(docId).update({
-    'notes' :newNote,
+    'note' :newNote,
     'timestamp': Timestamp.now()
   });
   }
   //Delete: delete notes given a doc id
+  Future<void> deleteNote(String docID){
+  return notes.doc(docID).delete();
+  }
 }
